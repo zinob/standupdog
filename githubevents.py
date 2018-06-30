@@ -30,11 +30,15 @@ def get_events_per_user(since):
     events=_get_events(since,config.github.api_token)
     usermap = config.github.github_slack_user_map
     d={}
+    unknown = []
     last=datetime.datetime.fromtimestamp(0)
     for (t,k,v) in events:
-        d.setdefault(usermap[k],set()).add(v.split("/",1)[1])
+        if k not in usermap:
+            unknown.append(k)
+            continue
+        d.setdefault(usermap[k.lower()],set()).add(v.split("/",1)[1])
         last=max(last,t)
-    return d, last
+    return d, last, unknown
 
 if __name__ == "__main__":
     print(get_events_per_user(_guess_when()))
