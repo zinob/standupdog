@@ -3,7 +3,6 @@
 
 import requests
 import datetime
-import collections
 from read_config import config
 
 slack_URL="https://slack.com/api/channels.history"
@@ -36,7 +35,6 @@ def _build_stories(attachment_list):
             if not "fields" in j:
                 field={"title":j["title"], "value":j["text"]}
             else:
-                print(len(j["fields"]))
                 f=j["fields"][0]
                 field={"title":f["title"], "value":f["value"]}
             stories.setdefault(pre,[]).append(field)
@@ -73,7 +71,7 @@ def get_todays_events(today_begins_at=None):
     token = config.slack.api_token
     channel_id = config.slack.chanel_id
 
-    slack_log = _get_chanel_log(startat,token,channel_id)
+    slack_log = _get_chanel_log(startat, token, channel_id)
     ulist = slack_uid_uname_map(token)
 
     attachlist = _get_message_attachments(slack_log.json())
