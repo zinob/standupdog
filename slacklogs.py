@@ -64,7 +64,9 @@ def get_todays_events(today_begins_at=None):
     """
 
     if today_begins_at == None:
-        startat=(datetime.datetime.now() - datetime.timedelta(days=1)).timestamp()
+        startat = (datetime.datetime.now() - datetime.timedelta(days=1)).timestamp()
+    elif hasattr(today_begins_at, "timestamp"):
+        startat = today_begins_at.timestamp()
     else:
         startat = today_begins_at
 
