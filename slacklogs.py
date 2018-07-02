@@ -18,7 +18,7 @@ def slack_uid_uname_map(token):
 def _get_message_attachments(slack_log):
     messages=slack_log["messages"]
     for message in sorted(messages,key=lambda x:x["ts"]):
-        is_standupbot="standup" in message.get('username',None).lower()
+        is_standupbot="standup" in message.get('username',"None" ).lower()
         has_attachments="attachments" in message
         if is_standupbot and has_attachments:
             yield message["attachments"]
