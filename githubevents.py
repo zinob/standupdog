@@ -18,7 +18,7 @@ def _gh_to_datetime(s):
 def _get_events(since,api_token):
     l=[]
     for i in range(1,10):
-        r=requests.get("https://api.github.com/users/zinob/events/orgs/zensum?page=%i"%i,headers={"Authorization":"token "+api_token})
+        r=requests.get("https://api.github.com/users/%s/events/orgs/%s?page=%i"%(config.github.effective_user,config.github.org,i),headers={"Authorization":"token "+api_token})
         events=((_gh_to_datetime(i["created_at"]),i["actor"]["login"],i["repo"]["name"]) for i in r.json())
         for event in events:
             if (event[0] - since).total_seconds() > 0:

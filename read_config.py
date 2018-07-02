@@ -6,7 +6,7 @@ from configparser import ConfigParser
 from collections import namedtuple
 
 SlackConf = namedtuple("SlackConf", ["api_token","chanel_id"])
-GHConf = namedtuple("GH_CONF", ["api_token","github_slack_user_map"])
+GHConf = namedtuple("GH_CONF", ["api_token","github_slack_user_map","effective_user","org"])
 
 class Config():
     """A convenience class for reading the config file.
@@ -21,6 +21,6 @@ class Config():
         conf.read(conf_file)
 
         s.slack = SlackConf( **conf['slack'] ) 
-        s.github = GHConf( conf['github']['api_token'], dict(conf["github_slack_user_map"]) ) 
+        s.github = GHConf( conf['github']['api_token'], dict(conf["github_slack_user_map"]),conf['github']['effective_user'],conf['github']['org'] ) 
 
 config=Config()
