@@ -1,12 +1,12 @@
 #!/bin/env python3
 # coding: utf-8
 
-import shelve
 import textwrap
 import slacklogs
 import githubevents
 
 import read_config
+import custom_store
 
 #####################################
 # https://cdn-shop.adafruit.com/datasheets/CSN-A2+User+Manual.pdf
@@ -34,7 +34,9 @@ def ul(s):
 def big(s):
  return printer_ctl["fonta"] +s+ printer_ctl["fontb"]
 
-storage = shelve.open("standup_data.shelve",writeback=True)
+
+storage = custom_store.load("standup_data.json")
+
 LINE_WIDTH = 41 
 INDENT_WIDTH = 4
 
@@ -89,7 +91,7 @@ print("starting")
 slacklog = slacklogs.get_todays_events(frm).items()
 print("got slacklog")
 if len(slacklog) > 0:
-#    unknown_gh = update_gh_since_last(storage)
+    unknown_gh = update_gh_since_last(storage)
     print("github fetched")
     with open("printout.txt","bw") as f:
         f.write(b"\n".join(todays_standup(slacklog,storage)))
@@ -101,5 +103,7 @@ if len(slacklog) > 0:
             print("found and talked about new guys on github")
         f.write(b"\n\n")
         print("wrote linefeed, going to close file...")
+
+storage = custom_store.save(storage,"standup_data.json")
 print("closed file")
 
