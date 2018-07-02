@@ -19,7 +19,7 @@ def _get_events(since,api_token):
     l=[]
     for i in range(1,10):
         r=requests.get("https://api.github.com/users/%s/events/orgs/%s?page=%i"%(config.github.effective_user,config.github.org,i),headers={"Authorization":"token "+api_token})
-        events=((_gh_to_datetime(i["created_at"]),i["actor"]["login"],i["repo"]["name"]) for i in r.json())
+        events=((_gh_to_datetime(i["created_at"]),i["actor"]["login"].lower(),i["repo"]["name"]) for i in r.json())
         for event in events:
             if (event[0] - since).total_seconds() > 0:
                 yield event
@@ -36,7 +36,7 @@ def get_events_per_user(since):
         if k not in usermap:
             unknown.setdefault(k,set()).add(v)
             continue
-        d.setdefault(usermap[k.lower()],set()).add(v.split("/",1)[1])
+        d.setdefault(usermap[k],set()).add(v.split("/",1)[1])
         last=max(last,t)
     return d, last, [k+", ".join(sorted(v)) for k,v in unknown.items()]
 
