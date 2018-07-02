@@ -9,11 +9,20 @@ slack_URL="https://slack.com/api/channels.history"
 
 
 def _get_chanel_log(from_time, slack_token, channel_id):
-    return requests.get(slack_URL,params={"token":slack_token,"channel":channel_id,"oldest":from_time})
+    request = requests.get(slack_URL,params={"token":slack_token,"channel":channel_id,"oldest":from_time})
+    log = request.json()
+    request.close()
+    return log
 
 def slack_uid_uname_map(token):
     slack_users=requests.get("https://slack.com/api/users.list",params={"token":token})
-    return {i['id']:i["name"] for i in slack_users.json()['members']}
+    users={}
+    for user in slack_users.json()['members']:
+        name=user.get("profile",{}).get("display_name") or user["name"]
+        users[user['id']]=name.lower()
+
+    slack_users.close()
+    return users
 
 def _get_message_attachments(slack_log):
     messages=slack_log["messages"]
@@ -76,7 +85,7 @@ def get_todays_events(today_begins_at=None):
     slack_log = _get_chanel_log(startat, token, channel_id)
     ulist = slack_uid_uname_map(token)
 
-    attachlist = _get_message_attachments(slack_log.json())
+    attachlist = _get_message_attachments(slack_log)
     stories = _build_stories(attachlist)
     return _tidy_up_stories(stories,ulist)
 
