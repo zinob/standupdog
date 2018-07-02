@@ -21,7 +21,7 @@ import custom_store
 #initseq
 printer_ctl={
  "init":b'\x1B\x40', #init
- "latin":b'\x1B\x74\x10', #set latin1
+ "latin1":b'\x1B\x74\x10', #set latin1
  "fonta":b'\x1B\x21\x00', #font A
  "fontb":b'\x1B\x21\x01', #font B
  "underlineon":b'\x1B\x2D\x02',
@@ -78,32 +78,25 @@ def todays_standup(slacklog,storage):
         storage[user] = ulog
 
 def format_name_header(name):
-    raw=(" @%s "%name).center(LINE_WIDTH*6//8,"-") + "\n"
-    return  b"\n"+big(raw.encode("latin-1")) 
+    raw=(" @%s "%name).center(LINE_WIDTH*6//8,"-")
+    return  b"\n"+big(raw.encode("latin-1"))  + b"\n"
 
 def format_fields(who,log_entry,message_map):
     return format_name_header(who) +\
         "\n".join( line_wrap(formatter(log_entry[key])) for key,formatter in message_map if log_entry.get(key,None)).encode("latin-1","replace")
 
-import datetime
-frm=datetime.datetime.now() - datetime.timedelta(days=3)
-print("starting")
-slacklog = slacklogs.get_todays_events(frm).items()
-print("got slacklog")
+#import datetime
+#frm=datetime.datetime.now() - datetime.timedelta(days=3)
+slacklog = slacklogs.get_todays_events().items()
 if len(slacklog) > 0:
     unknown_gh = update_gh_since_last(storage)
-    print("github fetched")
     with open("printout.txt","bw") as f:
+        f.write(printer_ctl['init']+printer_ctl['latin1'])
         f.write(b"\n".join(todays_standup(slacklog,storage)))
-        print("Write standup")
         f.write(b"\n")
-        print("wrote linefeed")
         if unknown_gh:
             f.write(b"new guys on GitHub: \n" + "\n   ".join(unknown_gh).encode('latin-1',"replace"))
-            print("found and talked about new guys on github")
         f.write(b"\n\n")
-        print("wrote linefeed, going to close file...")
 
 storage = custom_store.save(storage,"standup_data.json")
-print("closed file")
 
