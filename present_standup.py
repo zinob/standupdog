@@ -83,16 +83,20 @@ def format_name_header(name):
     raw=(" @%s "%name).center(LINE_WIDTH*6//8,"-")
     return  b"\n"+big(raw.encode("latin-1"))  + b"\n"
 
+def ul_field_name(s):
+	head, tail = s.split(b":",1)
+	return ul(head) + tail
+
 def format_fields(who,log_entry,message_map):
     return format_name_header(who) +\
-        "\n".join( line_wrap(formatter(log_entry[key])) for key,formatter in message_map if log_entry.get(key,None)).encode("latin-1","replace")
+        b"\n".join( ul_field_name(line_wrap(formatter(log_entry[key])).encode("latin-1","replace")) for key,formatter in message_map if log_entry.get(key,None))
 
 #import datetime
 #frm=datetime.datetime.now() - datetime.timedelta(days=3)
 slacklog = slacklogs.get_todays_events().items()
 if len(slacklog) > 0:
     unknown_gh = update_gh_since_last(storage)
-    with open("printout.txt","bw") as f:
+    with open("/tmp/printout.txt","bw") as f:
         f.write(printer_ctl['init']+printer_ctl['latin1'])
         f.write(b"\n".join(todays_standup(slacklog,storage)))
         f.write(b"\n")
