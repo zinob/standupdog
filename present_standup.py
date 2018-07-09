@@ -17,6 +17,7 @@ import custom_store
 # ESC t 16 # set code-page latin-1
 # ESC % 0x01 =  1B2501 #set user chars
 # Underline: echo 1B2D02
+# ESC J n = 1B 4A # feed paper nx0.125 mm 
 
 #initseq
 printer_ctl={
@@ -26,6 +27,7 @@ printer_ctl={
  "fontb":b'\x1B\x21\x01', #font B
  "underlineon":b'\x1B\x2D\x02',
  "underlineoff":b'\x1B\x2D\x00',
+ "feed":b'\x1B\x4A'+bytes(chr(5*8),"latin-1")
 }
 
 def ul(s):
@@ -96,7 +98,7 @@ if len(slacklog) > 0:
         f.write(b"\n")
         if unknown_gh:
             f.write(b"new guys on GitHub: \n" + "\n   ".join(unknown_gh).encode('latin-1',"replace"))
-        f.write(b"\n\n")
+        f.write(printer_ctl["feed"])
 
 storage = custom_store.save(storage,"standup_data.json")
 
