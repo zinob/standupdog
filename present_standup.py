@@ -31,7 +31,7 @@ printer_ctl={
 }
 
 def ul(s):
- return printer_ctl["underlineon"] +s+ printer_ctl["underlineon"]
+ return printer_ctl["underlineon"] +s+ printer_ctl["underlineoff"]
 
 def big(s):
  return printer_ctl["fonta"] +s+ printer_ctl["fontb"]
